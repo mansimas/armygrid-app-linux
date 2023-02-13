@@ -18,7 +18,7 @@ autoUpdater.setFeedURL({
   repo: "electron-app",
 });
 
-autoUpdater.autoDownload = true;
+autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
