@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/margoch24/electron-app.git"
+    "url": "https://github.com/mansimas/armygrid-app-linux.git"
   },
   "publish": {
     "provider": "github",

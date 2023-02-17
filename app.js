@@ -1,25 +1,25 @@
 var { app, BrowserWindow, Menu } = require('electron');
 var axios = require('axios');
-var { autoUpdater, AppUpdater } = require('electron-updater');
+// var { autoUpdater, AppUpdater } = require('electron-updater');
 
 var isMac = process.platform === 'darwin'
 var mainWindow, AdditionalWindow;
 
-process.env.APPIMAGE = require('path').join(__dirname, 'dist', `Armygrid-${app.getVersion()}.AppImage`)
-Object.defineProperty(app, 'isPackaged', {
-  get() {
-    return true;
-  }
-});
+// process.env.APPIMAGE = require('path').join(__dirname, 'dist', `Armygrid-${app.getVersion()}.AppImage`)
+// Object.defineProperty(app, 'isPackaged', {
+//   get() {
+//     return true;
+//   }
+// });
 
-autoUpdater.setFeedURL({
-  provider: "github",
-  owner: "margoch24",
-  repo: "electron-app",
-});
+// autoUpdater.setFeedURL({
+//   provider: "github",
+//   owner: "margoch24",
+//   repo: "electron-app-linux",
+// });
 
-autoUpdater.autoDownload = false;
-autoUpdater.autoInstallOnAppQuit = true;
+// autoUpdater.autoDownload = false;
+// autoUpdater.autoInstallOnAppQuit = true;
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -33,26 +33,8 @@ function createMainWindow() {
   });
   mainWindow.loadURL('http://localhost:1400');
   createMainMenu();
-  // sendData();
-  // showMessage('Checking for updates');
+  fromApp();
 }
-
-function showMessage(message) {
-  console.log('showMessage trapped');
-  console.log(message);
-  mainWindow.webContents.executeJavaScript(`alert("${message}")`, true)
-  mainWindow.webContents.send('updateMessage', message);
-}
-
-// function sendData() {
-//   axios.post('http://localhost:1400/download', {
-//     platform: process.platform,
-//     version: app.getVersion()
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-// }
 
 function createAdditionalWindow() {
   AdditionalWindow = new BrowserWindow({
@@ -66,11 +48,22 @@ function createAdditionalWindow() {
   });
   AdditionalWindow.loadURL('http://localhost:1400');
   createMainMenu();
+  fromApp()
 }
+
+function fromApp() {
+  mainWindow.webContents.executeJavaScript("localStorage.setItem('armygrid_from_app', true);", true)
+}
+
+// function showMessage(message) {
+//   console.log('showMessage trapped');
+//   console.log(message);
+//   mainWindow.webContents.executeJavaScript(`alert("${message}")`, true)
+// }
 
 app.whenReady().then(() => {
   createMainWindow();
-  autoUpdater.checkForUpdates();
+  // autoUpdater.checkForUpdates();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -79,28 +72,27 @@ app.whenReady().then(() => {
   })
 });
 
-autoUpdater.on('checking-for-update', () => {
-  showMessage('Checking for update...')
-})
+// autoUpdater.on('checking-for-update', () => {
+//   showMessage('Checking for update...')
+// })
 
-autoUpdater.on("update-available", (info) => {
-  showMessage(`Update available. Current version ${app.getVersion()}`);
-  var pth = autoUpdater.downloadUpdate();
-  showMessage(pth);
-});
+// autoUpdater.on("update-available", (info) => {
+//   showMessage(`Update available. Current version ${app.getVersion()}`);
+//   autoUpdater.downloadUpdate();
+// });
 
-autoUpdater.on("update-not-available", (info) => {
-  showMessage(`No update available. Current version ${app.getVersion()}`);
-});
+// autoUpdater.on("update-not-available", (info) => {
+//   showMessage(`No update available. Current version ${app.getVersion()}`);
+// });
 
-/*Download Completion Message*/
-autoUpdater.on("update-downloaded", (info) => {
-  showMessage(`Update downloaded. Current version ${app.getVersion()}`);
-});
+// /*Download Completion Message*/
+// autoUpdater.on("update-downloaded", (info) => {
+//   showMessage(`Update downloaded. Current version ${app.getVersion()}`);
+// });
 
-autoUpdater.on("error", (info) => {
-  showMessage(info);
-});
+// autoUpdater.on("error", (info) => {
+//   showMessage(info);
+// });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
