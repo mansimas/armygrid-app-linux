@@ -1,26 +1,9 @@
-var { app, BrowserWindow, Menu, dialog, shell } = require('electron');
+var { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
 var latest = require('github-latest-release');
 var { compare } = require('compare-versions');
-// var { autoUpdater, AppUpdater } = require('electron-updater');
 
 var isMac = process.platform === 'darwin'
-var mainWindow, AdditionalWindow;
-
-// process.env.APPIMAGE = require('path').join(__dirname, 'dist', `Armygrid-${app.getVersion()}.AppImage`)
-// Object.defineProperty(app, 'isPackaged', {
-//   get() {
-//     return true;
-//   }
-// });
-
-// autoUpdater.setFeedURL({
-//   provider: "github",
-//   owner: "margoch24",
-//   repo: "electron-app-linux",
-// });
-
-// autoUpdater.autoDownload = false;
-// autoUpdater.autoInstallOnAppQuit = true;
+var mainWindow, additionalWindow;
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -38,16 +21,16 @@ function createMainWindow() {
 }
 
 function createAdditionalWindow() {
-  AdditionalWindow = new BrowserWindow({
+  additionalWindow = new BrowserWindow({
     title: 'Armygrid',
     width: 1200,
     height: 700,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true    
     },
     icon: __dirname + '/assets/AG_logo.png',
   });
-  AdditionalWindow.loadURL('https://armygrid.com');
+  additionalWindow.loadURL('https://armygrid.com');
   createMainMenu();
   fromApp()
 }
@@ -66,7 +49,7 @@ function NotificateIfUpdate() {
       dialog.showMessageBox(
         {
           type: 'info',
-          buttons:['Open Browser to download', 'Close'],
+          buttons:['Open Browser to download'],
           title: 'Update Available',
           message: `A new version ${newVersion} is available. \nClick to open browser and download.`,
         })
@@ -79,12 +62,6 @@ function NotificateIfUpdate() {
   })
 }
 
-// function showMessage(message) {
-//   console.log('showMessage trapped');
-//   console.log(message);
-//   mainWindow.webContents.executeJavaScript(`alert("${message}")`, true)
-// }
-
 app.whenReady().then(() => {
   createMainWindow();
   NotificateIfUpdate()
@@ -95,28 +72,6 @@ app.whenReady().then(() => {
     }
   })
 });
-
-// autoUpdater.on('checking-for-update', () => {
-//   showMessage('Checking for update...')
-// })
-
-// autoUpdater.on("update-available", (info) => {
-//   showMessage(`Update available. Current version ${app.getVersion()}`);
-//   autoUpdater.downloadUpdate();
-// });
-
-// autoUpdater.on("update-not-available", (info) => {
-//   showMessage(`No update available. Current version ${app.getVersion()}`);
-// });
-
-// /*Download Completion Message*/
-// autoUpdater.on("update-downloaded", (info) => {
-//   showMessage(`Update downloaded. Current version ${app.getVersion()}`);
-// });
-
-// autoUpdater.on("error", (info) => {
-//   showMessage(info);
-// });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
