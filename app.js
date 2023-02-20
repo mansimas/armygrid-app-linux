@@ -1,5 +1,6 @@
-var { app, BrowserWindow, Menu } = require('electron');
-var axios = require('axios');
+var { app, BrowserWindow, Menu, dialog, shell } = require('electron');
+var latest = require('github-latest-release');
+var { compare } = require('compare-versions');
 // var { autoUpdater, AppUpdater } = require('electron-updater');
 
 var isMac = process.platform === 'darwin'
@@ -31,7 +32,7 @@ function createMainWindow() {
     },
     icon: __dirname + '/assets/AG_logo.png', 
   });
-  mainWindow.loadURL('http://localhost:1400');
+  mainWindow.loadURL('https://armygrid.com');
   createMainMenu();
   fromApp();
 }
@@ -46,13 +47,36 @@ function createAdditionalWindow() {
     },
     icon: __dirname + '/assets/AG_logo.png',
   });
-  AdditionalWindow.loadURL('http://localhost:1400');
+  AdditionalWindow.loadURL('https://armygrid.com');
   createMainMenu();
   fromApp()
 }
 
 function fromApp() {
   mainWindow.webContents.executeJavaScript("localStorage.setItem('armygrid_from_app', true);", true)
+}
+
+function NotificateIfUpdate() {
+  latest('mansimas', 'armygrid-app-linux', function(err, data) {
+    if(err || !data.tag_name) return;
+    var localVersion = require('./package.json').version;
+    var newVersion = data.tag_name;
+    if (compare(localVersion, newVersion, '=')) return;
+    else {
+      dialog.showMessageBox(
+        {
+          type: 'info',
+          buttons:['Open Browser to download', 'Close'],
+          title: 'Update Available',
+          message: `A new version ${newVersion} is available. \nClick to open browser and download.`,
+        })
+      .then(function(result) {
+        if (result.response === 0) {
+          shell.openExternal('https://armygrid.com/download');
+        }
+      });
+    }
+  })
 }
 
 // function showMessage(message) {
@@ -63,7 +87,7 @@ function fromApp() {
 
 app.whenReady().then(() => {
   createMainWindow();
-  // autoUpdater.checkForUpdates();
+  NotificateIfUpdate()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
