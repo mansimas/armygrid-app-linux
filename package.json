@@ -1,12 +1,13 @@
 {
   "name": "armygrid",
   "version": "0.0.1",
-  "description": "",
+  "description": "Armygrid",
   "main": "app.js",
   "homepage": "https://armygrid.com",
   "scripts": {
     "start": "electron . --disable-gpu",
     "release": "node pre-build.js && electron-builder build --publish always && node pre-build.js",
+    "build-dev": "node pre-build.js && electron-builder && node pre-build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,8 +30,7 @@
     },
     "linux": {
       "target": [
-        "deb",
-        "tar.gz"
+        "deb"
       ],
       "category": "Utility",
       "icon": "assets/logo.icns"

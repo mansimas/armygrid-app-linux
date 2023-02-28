@@ -1,4 +1,4 @@
-var { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron');
+var { app, BrowserWindow, Menu, dialog, shell } = require('electron');
 var latest = require('github-latest-release');
 var { compare } = require('compare-versions');
 
@@ -41,9 +41,10 @@ function fromApp() {
 
 function NotificateIfUpdate() {
   latest('mansimas', 'armygrid-app-linux', function(err, data) {
-    if(err || !data.tag_name) return;
+    console.log(data)
+    if(err || !data.name) return;
     var localVersion = require('./package.json').version;
-    var newVersion = data.tag_name;
+    var newVersion = data.name;
     if (compare(localVersion, newVersion, '=')) return;
     else {
       dialog.showMessageBox(
